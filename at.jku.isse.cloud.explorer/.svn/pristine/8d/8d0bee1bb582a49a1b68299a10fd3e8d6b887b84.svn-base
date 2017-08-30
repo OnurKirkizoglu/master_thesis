@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="803.0" prefWidth="1236.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainViewController">
+   <children>
+      <SplitPane dividerPositions="0.2925445705024311" layoutX="117.0" layoutY="94.0" prefHeight="255.0" prefWidth="417.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <VBox layoutX="111.0" layoutY="69.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="50.0" prefWidth="367.0">
+                           <children>
+                              <Button layoutX="314.0" layoutY="11.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="29.0">
+                                 <graphic>
+                                    <Circle fill="RED" radius="7.0" stroke="#0000004c" strokeType="INSIDE" />
+                                 </graphic>
+                              </Button>
+                              <TextField alignment="TOP_LEFT" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="253.0" promptText="Filter..." />
+                              <Button layoutX="277.0" layoutY="11.0" mnemonicParsing="false" onAction="#onRefresh" prefHeight="30.0" prefWidth="29.0">
+                                 <graphic>
+                                    <Circle fill="#25f24a" radius="7.0" stroke="#0000004d" strokeType="INSIDE" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefHeight="14.0" prefWidth="367.0" />
+                        <TreeView prefHeight="479.0" prefWidth="380.0" />
+                        <Separator prefHeight="14.0" prefWidth="367.0" />
+                        <AnchorPane prefHeight="267.0" prefWidth="380.0">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane prefHeight="67.0" prefWidth="358.0">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Artefact Description" textAlignment="CENTER" wrappingWidth="355.13671875" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                       <children>
+                                          <TableView prefHeight="225.0" prefWidth="358.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <columns>
+                                                <TableColumn prefWidth="221.0" text="Property" />
+                                                <TableColumn minWidth="0.0" prefWidth="158.0" text="Value" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <WebView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,65 @@
+package at.jku.sea.cloud.rest.server.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import at.jku.sea.cloud.exceptions.ProjectDoesNotExistException;
+import at.jku.sea.cloud.rest.pojo.PojoArtifact;
+import at.jku.sea.cloud.rest.pojo.PojoPackage;
+import at.jku.sea.cloud.rest.pojo.PojoProject;
+import at.jku.sea.cloud.rest.server.handler.ProjectHandler;
+
+/**
+ * @author Dominik Muttenthaler
+ * @author Florian Weger
+ */
+@Controller
+@RequestMapping("/designspace/projects")
+public class ProjectController {
+
+	@Autowired ProjectHandler handler;
+
+	@RequestMapping(value = "/id={id}&v={version}/artifacts", method = RequestMethod.GET)
+	public ResponseEntity<PojoArtifact[]> getArtifacts(
+			@PathVariable long id,
+			@PathVariable long version)
+			throws ProjectDoesNotExistException {
+		PojoArtifact[] result = handler.getArtifacts(id, version);
+		return new ResponseEntity<PojoArtifact[]>(result, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/id={id}&v={version}/packages", method = RequestMethod.GET)
+	public ResponseEntity<PojoPackage[]> getPackages(
+			@PathVariable long id,
+			@PathVariable long version)
+			throws ProjectDoesNotExistException {
+		PojoPackage[] result = handler.getPackages(id, version);
+		return new ResponseEntity<PojoPackage[]>(result, HttpStatus.OK);
+	}
+	
+	@RequestMapping( value = "/func/create", method = RequestMethod.POST)
+	public ResponseEntity<PojoProject> createProject(@RequestBody String name) {
+	  PojoProject result = handler.createProject(name);
+	  return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
+	// ------------------------------------
+	// Exception handling
+	// ------------------------------------
+
+	@ExceptionHandler(ProjectDoesNotExistException.class)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	@ResponseBody
+	public String handleProjectDoesNotExistException() {
+		return ProjectDoesNotExistException.class.getSimpleName();
+	}
+}

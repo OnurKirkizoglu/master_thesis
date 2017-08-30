@@ -1,0 +1,24 @@
+{
+  "artifacts" : [ {
+    "__type" : "MetaModel",
+    "id" : 7,
+    "version" : -1
+  } ],
+  "propertyFilters" : [ {
+    "name" : "name",
+    "value" : {
+      "object" : "Root-Type"
+    }
+  } ]
+}
+
+-----
+
+{
+  "artifacts" : [ {
+    "__type" : "MetaModel",
+    "id" : 7,
+    "version" : -1
+  } ],
+  "propertyFilters" : null
+}

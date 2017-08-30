@@ -1,0 +1,27 @@
+{
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "properties" : [ {
+    "id" : 1,
+    "version" : 1,
+    "name" : "first"
+  }, {
+    "id" : 2,
+    "version" : 2,
+    "name" : "second"
+  } ]
+}
+
+-----
+
+{
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "properties" : null
+}

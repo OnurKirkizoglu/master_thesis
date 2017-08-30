@@ -1,0 +1,35 @@
+Version
+    PublicVersion
+    // TODO: Is a workspace a version ? (Interface: YES, Implementation: NO)
+    Workspace
+
+Artifact
+    CollectionArtifact
+    MetaModel
+    Owner
+    Package
+    Project
+    Tool
+
+// TODO: Test whether we need all subtypes in change or just the one in the next level
+Change
+    ArtifactChange
+        ArtifactAliveSet
+        ArtifactCommited
+        ArtifactCreated
+        ArtifactPackageSet
+        ArtifactRollBack
+        ArtifactTypeSet
+        CollectionAddedElement
+        CollectionRemovedElement
+    PropertyChange
+        PropertyAliveSet
+        PropertyCommited
+        PropertyRollBack
+        PropertyValueSet
+    WorkspaceChange
+        VersionCommited
+        WorkspaceAdded
+        WorkspaceClosed
+        WorkspaceRebased
+        WorkspaceRollBack

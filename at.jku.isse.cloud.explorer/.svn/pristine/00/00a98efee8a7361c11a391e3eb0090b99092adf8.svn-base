@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- load JavaScript libraries -->
+    <script type="text/javascript" src="js/go.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/diagram.js"></script>
+
+    <!-- load CSS stylesheets -->
+    <link rel="stylesheet" href="style/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="style/basic.css" type="text/css" />
+
+    <!-- Thanks to Iconarchive.com! http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/64/Apps-graphics-viewer-document-icon.png -->
+    <link rel="icon" href="img/favicon.png" type="image/png">
+
+    <title>Design Space Viewer</title>
+</head>
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+    <!-- Header Bar -->
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <h2>Design Space Viewer</h2>
+                <a href="#" ng-click="counter=counter+1;toggleControl();">
+                    <span id="control-toggle"
+                          class="glyphicon"
+                          ng-class="{'glyphicon-option-vertical':!showControl, 'glyphicon-option-horizontal': showControl}"
+                            ></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container-fluid text-left"> <!-- Begin of centered content -->
+
+        <!-- simple unicorn overlay, uncomment to reveal it -->
+        <!-- <div class="overlay-content" ng-class="{'show':counter===13}"
+             ng-click="counter=counter+1;">enjoy!</div><div
+                class="overlay" ng-class="{'show':counter===13}">
+        </div> -->
+
+
+        <div id="control-menu" class="col-sm-12" ng-show="showControl">   <!-- Begin of control menu -->
+            <div class="card form-horizontal">
+                <div class="form-group" ng-class="{'has-error':!toolValid && toolSelected !== 0, 'has-warning':toolValid && toolSelected !== 0 && !artifacts.length && artifacts.length === 0}">
+                    <label for="tool" class="control-label col-sm-4">Select Tool by ID:</label>
+                    <div class="col-sm-8">
+                        <input type="number"
+                               min="0"
+                               ng-model="toolSelected"
+                               ng-change="onToolChanged()"
+                               class="form-control"
+                               id="tool" />
+                        <div class="text-warning"
+                             ng-show="toolValid && toolSelected !== 0 && !artifacts.length && artifacts.length === 0">This Tool does not contain any Artifacts!</div>
+                        <div class="text-danger"
+                             ng-show="!toolValid && toolSelected !== 0">Sorry, no Tool with this ID found!</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="artifact" class="control-label col-sm-4">Select artifact by ID:</label>
+                    <div class="col-sm-8">
+                        <select ng-model="artifactSelected"
+                                ng-change="onArtifactSelectChanged()"
+                                ng-disabled="!artifacts.length && artifacts.length === 0"
+                                class="form-control"
+                                id="artifact">
+                            <option ng-repeat="artifact in artifacts | orderBy: '+id'"
+                                    value="{{ artifact.id + ';' + artifact.version }}">
+                                {{ "ID: " + artifact.id + " Type: " + artifact.__type + " Version: " + artifact.version }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-warning':searchLevelReached}">
+                    <label for="tool" class="control-label col-sm-4">Search depth:</label>
+                    <div class="col-sm-8">
+                        <input type="number"
+                               min="0"
+                               ng-model="searchLevel"
+                               ng-change="onArtifactSelectChanged()"
+                               ng-disabled="!artifacts.length && artifacts.length === 0"
+                               class="form-control"
+                               id="level" />
+                        <div class="text-warning"
+                             ng-show="searchLevelReached">Hint: Increase 'search depth' to receive more artifacts</div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-warning':maxArtifactsReached}">
+                    <label for="tool" class="control-label col-sm-4">Maximum of Artifacts:</label>
+                    <div class="col-sm-8">
+                        <input type="number"
+                               min="1"
+                               ng-model="maxArtifacts"
+                               ng-change="onArtifactSelectChanged()"
+                               ng-disabled="!artifacts.length && artifacts.length === 0"
+                               class="form-control"
+                               id="maximum" />
+                        <div class="text-warning"
+                             ng-show="maxArtifactsReached">Hint: Increase 'maximum of Artifacts' to receive more artifacts</div>
+                    </div>
+                </div>
+            </div>
+        </div>  <!-- End of control menu -->
+
+
+        <!-- Div for Diagram -->
+        <div class="col-sm-12 text-left">
+            <div class="card">
+                <div id="goDiagram" style="min-height: 600px; border: 1px solid #aaa;"></div>
+            </div>
+        </div>
+
+
+    </div> <!-- End of content -->
+
+</div>
+
+<p id="TestOutput"></p>
+
+
+<script src="js/controller.js"></script>
+<script src="js/jfxIntegration.js"></script>
+
+</body>
+</html>

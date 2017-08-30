@@ -1,0 +1,98 @@
+body {
+    background-color: #f1f1f1;
+}
+
+.card {
+    background-color: #fff;
+    box-shadow: 0px 2px 2px 0px #aaa;
+    margin-top: 20px;
+    padding: 15px;
+}
+
+.navbar {
+    background-color: #43A047;
+    border-color: #009688;
+    border-radius: 0;
+    box-shadow: 0px 2px 2px 0px #aaa;
+    color: #fff;
+    height: 120px;
+    margin-bottom: 0;
+    z-index: 3;
+}
+
+.container-fluid > .navbar-header {
+    margin-top: 40px;
+}
+
+#control-menu {
+    margin-top: -20px;
+    z-index: 1;
+}
+
+#control-toggle {
+    font-size: 30px;
+    position: absolute;
+    right: 35px;
+    top: 58px;
+}
+
+a, a:active, a:hover, a:link, a:visited {
+    color: #fff;
+}
+
+a:hover {
+    color: #fff;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {height: 450px}
+
+/* Set gray background color and 100% height */
+.sidenav {
+    padding-top: 20px;
+
+    height: 100%;
+}
+
+.overlay {
+    background: #333;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    display: none;
+    height: 100%;
+    left: 0px;
+    opacity: 0.5;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 998;
+}
+
+.overlay-content {
+    background: url("../img/unicorn.gif");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    display: none;
+    height: 100%;
+    left: 0px;
+    opacity: 1;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index:999;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (min-width: 768px) {
+    .container-fluid > .navbar-header { margin-left:20px; }
+}

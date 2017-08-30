@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- The jQuery library is a prerequisite for all jqSuite products -->
+<script type="text/ecmascript" src="jquery.min.js"></script>
+<!-- This is the Javascript file of jqGrid -->
+<script type="text/ecmascript" src="jquery.jqGrid.min.js"></script>
+<!-- This is the localization file of the grid controlling messages, labels, etc.
+    <!-- We support more than 40 localizations -->
+<script type="text/ecmascript" src="grid.locale-en.js"></script>
+<!-- A link to a jQuery UI ThemeRoller theme, more than 22 built-in and many more custom -->
+<link rel="stylesheet" type="text/css" media="screen"
+	href="jquery-ui.css" />
+<!-- The link to the CSS that the grid needs -->
+<link rel="stylesheet" type="text/css" media="screen"
+	href="ui.jqgrid.css" />
+<meta charset="utf-8" />
+<title>jqGrid Functionality - Built-In Formatters</title>
+</head>
+<body>
+	<table id="jqGrid"></table>
+
+	<script>
+	
+	function createJsMatrix(rows, cols){
+		  var arr = [];
+
+		  // Creates all lines:
+		  for(var i=0; i < rows; i++){
+
+		      // Creates an empty line
+		      arr.push([]);
+
+		      // Adds cols to the empty line:
+		      arr[i].push( new Array(cols));
+
+		      for(var j=0; j < cols; j++){
+		        // Initializes:
+		        arr[i][j] = matrix.getStringElement(i,j);
+		      }
+		  }
+		  return arr;
+	}
+	  
+	function refreshMatrix() {
+		// column header
+		var listOfColumnModels = [];
+		// rows
+		var mydata = [];
+		// transformation from string2dmatrix in javafx to var2dmatrix in js
+		var jsMatrix = createJsMatrix(matrix.getRowSize(), matrix.getColSize());
+		// create columns
+		for(var col = 0; col < jsMatrix[0].length;col++){
+			if(col == 0){
+				listOfColumnModels.push({
+					label: "" + jsMatrix[0][col], name: ""+jsMatrix[0][col], frozen: true, align: 'center'
+			    });	
+			}else{
+				if(matrix.isMultipleMatrix()){
+					// multiple links
+					listOfColumnModels.push({
+						label: "" + jsMatrix[0][col], name: ""+jsMatrix[0][col], editable:true, align: 'center', formatter:function (cellvalue, options, rowObject) {    
+	                        return "<button class=\"button\">"+cellvalue+"</button>";
+	                    }
+					});
+				}else{
+					//single link
+					listOfColumnModels.push({
+						label: "" + jsMatrix[0][col], name: ""+jsMatrix[0][col], formatter: "checkbox", formatoptions: { disabled: false},
+			            edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"}, align: 'center'
+				    });
+				}
+			}
+		}
+		
+		// insert rows
+		for(var row =1; row < jsMatrix.length;row++){
+			var obj;
+			for(var col = 0; col < jsMatrix[row].length;col++){
+				obj = $.extend({}, obj, {[jsMatrix[0][col]]: ""+[jsMatrix[row][col]] });
+			}
+			mydata.push(obj);	
+		}
+		
+		$(document).ready(function () {
+	        $("#jqGrid").jqGrid({
+	            datatype: "local",
+				data: mydata,
+	            height: null,
+				width: null,
+	            colModel: listOfColumnModels,
+	            viewrecords: true,
+	            shrinkToFit: false,
+	            height: 'auto',
+	            rownumbers: true,
+	            caption: 'Row: SOURCE, Column: TARGET',
+                beforeSelectRow: function (rowid, e) {
+                    var $target = $(e.target), $td = $target.closest("td"),
+                        iCol = $.jgrid.getCellIndex($td[0]),
+                        colModel = $(this).jqGrid("getGridParam", "colModel");
+                    if (iCol >= 0 && $target.is(":checkbox")) {
+                        $target.is(":checked")? matrix.addLink(rowid, iCol-1) : matrix.deleteLink(rowid, iCol-1);
+                    }
+                    return true;
+                },
+                onCellSelect: function(rowid,icol,cellcontent,e){
+                    matrix.showMultipleLinks(rowid, (icol-1));
+                    return true;
+                }
+	        });
+	    	$("#jqGrid").jqGrid("setFrozenColumns");
+	    });
+		$('#jqGrid').closest(".ui-jqgrid-bdiv").css({"overflow-y" : "scroll"});
+    	$("#jqGrid").jqGrid("setFrozenColumns");
+	}
+	
+	function removeMatrix(){
+		$.jgrid.gridUnload('#jqGrid'); 
+	}
+	</script>
+
+</body>
+</html>

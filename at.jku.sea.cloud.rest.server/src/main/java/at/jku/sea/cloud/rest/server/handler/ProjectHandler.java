@@ -1,0 +1,46 @@
+package at.jku.sea.cloud.rest.server.handler;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import at.jku.sea.cloud.Artifact;
+import at.jku.sea.cloud.Cloud;
+import at.jku.sea.cloud.Package;
+import at.jku.sea.cloud.Project;
+import at.jku.sea.cloud.exceptions.ProjectDoesNotExistException;
+import at.jku.sea.cloud.rest.pojo.PojoArtifact;
+import at.jku.sea.cloud.rest.pojo.PojoPackage;
+import at.jku.sea.cloud.rest.pojo.PojoProject;
+import at.jku.sea.cloud.rest.pojo.factory.PojoFactory;
+
+/**
+ * @author Dominik Muttenthaler
+ * @author Florian Weger
+ */
+public class ProjectHandler {
+
+	@Autowired protected Cloud cloud;
+	@Autowired protected PojoFactory pojoFactory;
+
+	public PojoArtifact[] getArtifacts(
+			long id,
+			long version)
+			throws ProjectDoesNotExistException {
+		Project project = cloud.getProject(version, id);
+		Artifact[] artifacts = project.getArtifacts().toArray(new Artifact[0]);
+		return pojoFactory.createPojoArray(artifacts);
+	}
+
+	public PojoPackage[] getPackages(
+			long id,
+			long version)
+			throws ProjectDoesNotExistException {
+		Project project = cloud.getProject(version, id);
+		Package[] packages = project.getPackages().toArray(new Package[0]);
+		return pojoFactory.createPojoArray(packages);
+	}
+
+  public PojoProject createProject(String name) {
+    Project project = cloud.createProject(name);
+    return pojoFactory.createPojo(project);
+  }
+}

@@ -1,0 +1,171 @@
+PojoChange:
+{
+  "__type" : "Change"
+}
+
+-----
+
+PojoArtifactChange:
+{
+  "__type" : "ArtifactChange",
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  }
+}
+
+-----
+
+PojoArtifactAliveSet:
+{
+  "__type" : "ArtifactAliveSet",
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "alive" : false
+}
+
+-----
+
+PojoArtifactCommited:
+{
+  "__type" : "ArtifactCommited",
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "version" : {
+    "__type" : "PublicVersion",
+    "version" : 1,
+    "message" : "change message"
+  }
+}
+
+-----
+
+PojoCollectionAddedElement:
+{
+  "__type" : "CollectionAddedElement",
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "value" : {
+    "object" : "some string"
+  }
+}
+
+-----
+
+PojoCollectionAddedElement:
+{
+  "__type" : "CollectionAddedElement",
+  "artifact" : {
+    "__type" : "Artifact",
+    "id" : 1,
+    "version" : 1
+  },
+  "value" : {
+    "object" : {
+      "__type" : "Package",
+      "id" : 1,
+      "version" : 1
+    }
+  }
+}
+
+-----
+
+PojoPropertyChange:
+{
+  "__type" : "PropertyChange",
+  "property" : {
+    "id" : 1,
+    "version" : 1,
+    "name" : "first"
+  }
+}
+
+-----
+
+PojoPropertyValueSet:
+{
+  "__type" : "PropertyValueSet",
+  "property" : {
+    "id" : 1,
+    "version" : 1,
+    "name" : "first"
+  },
+  "value" : {
+    "object" : {
+      "__type" : "Package",
+      "id" : 1,
+      "version" : 1
+    }
+  },
+  "oldValue" : {
+    "object" : "some string"
+  },
+  "wasReference" : false
+}
+
+-----
+
+PojoWorkspaceChange:
+{
+  "__type" : "WorkspaceChange",
+  "workspace" : {
+    "__type" : "Workspace",
+    "version" : -1,
+    "id" : 1
+  }
+}
+
+-----
+
+PojoWorkspaceRebased:
+{
+  "__type" : "WorkspaceRebased",
+  "workspace" : {
+    "__type" : "Workspace",
+    "version" : -1,
+    "id" : 1
+  },
+  "version" : {
+    "__type" : "PublicVersion",
+    "version" : 1,
+    "message" : "change message"
+  },
+  "changes" : [ {
+    "__type" : "ArtifactAliveSet",
+    "artifact" : {
+      "__type" : "Artifact",
+      "id" : 1,
+      "version" : 1
+    },
+    "alive" : false
+  }, {
+    "__type" : "PropertyValueSet",
+    "property" : {
+      "id" : 1,
+      "version" : 1,
+      "name" : "first"
+    },
+    "value" : {
+      "object" : {
+        "__type" : "Package",
+        "id" : 1,
+        "version" : 1
+      }
+    },
+    "oldValue" : {
+      "object" : "some string"
+    },
+    "wasReference" : false
+  } ]
+}

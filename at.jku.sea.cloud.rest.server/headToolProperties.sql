@@ -1,0 +1,1 @@
+SELECT * FROM PROPERTIES p WHERE artifactid IN (SELECT id FROM artifacts WHERE type = 3) AND version = (SELECT MAX(version) FROM properties WHERE artifactid = p.artifactid and name = p.name)

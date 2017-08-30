@@ -1,0 +1,1 @@
+SELECT MAX(p.version) AS public, MIN(w.private_version) AS private FROM properties p JOIN private_ws w ON true

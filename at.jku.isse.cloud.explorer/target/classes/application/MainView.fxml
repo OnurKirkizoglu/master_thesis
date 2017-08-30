@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="803.0" prefWidth="1236.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainViewController">
+   <children>
+      <SplitPane dividerPositions="0.29578606158833065" layoutX="117.0" layoutY="94.0" prefHeight="255.0" prefWidth="417.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <SplitPane dividerPositions="0.5794743429286608" layoutX="-3.0" orientation="VERTICAL" prefHeight="801.0" prefWidth="368.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                        <AnchorPane prefHeight="657.0" prefWidth="366.0">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox prefHeight="79.0" prefWidth="366.0">
+                                       <children>
+                                          <TextField fx:id="searchField" alignment="TOP_LEFT" onAction="#filterTreeView" prefHeight="25.0" prefWidth="285.0" promptText="Filter...">
+                                             <HBox.margin>
+                                                <Insets left="3.0" right="3.0" top="3.0" />
+                                             </HBox.margin>
+                                             <tooltip>
+                                                <Tooltip text="Enter &quot;id=[X]&quot; to search for the artifact with the id X" />
+                                             </tooltip>
+                                          </TextField>
+                                          <Button mnemonicParsing="false" onAction="#refreshTreeView" prefHeight="30.0" prefWidth="29.0">
+                                             <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@arrow-refresh-icon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                             <HBox.margin>
+                                                <Insets right="3.0" />
+                                             </HBox.margin>
+                                          </Button>
+                                          <Button mnemonicParsing="false" onAction="#showSettings" prefHeight="30.0" prefWidth="29.0">
+                                             <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@cog-icon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="3.0" top="3.0" />
+                                       </padding>
+                                    </HBox>
+                                    <TreeView fx:id="projectExplorer" onKeyReleased="#onTreeViewSelection" onMouseClicked="#onTreeViewSelection" prefHeight="592.0" prefWidth="366.0" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="294.0" prefWidth="366.0">
+                           <children>
+                              <VBox prefHeight="280.0" prefWidth="366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane prefHeight="157.0" prefWidth="360.0">
+                                       <children>
+                                          <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <CheckBox fx:id="showArtifactNames" mnemonicParsing="false" onAction="#toggleArtifactNames" selected="true" text="Show artifact name if available">
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" left="15.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </CheckBox>
+                                                <Separator prefWidth="200.0" />
+                                                <Text fx:id="artifactDescription" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="355.13671875">
+                                                   <VBox.margin>
+                                                      <Insets left="5.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Text>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane prefHeight="268.0" prefWidth="366.0">
+                                       <children>
+                                          <TableView fx:id="artifactInspector" prefHeight="206.0" prefWidth="366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <columns>
+                                                <TableColumn fx:id="propertyNameColumn" prefWidth="221.0" text="Property" />
+                                                <TableColumn fx:id="propertyValueColumn" minWidth="0.0" prefWidth="158.0" text="Value" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <WebView fx:id="webview" layoutX="28.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,134 @@
+package at.jku.sea.cloud.rest.server.handler;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import at.jku.sea.cloud.Artifact;
+import at.jku.sea.cloud.Cloud;
+import at.jku.sea.cloud.Container;
+import at.jku.sea.cloud.Container.Filter;
+import at.jku.sea.cloud.Property;
+import at.jku.sea.cloud.Resource;
+import at.jku.sea.cloud.rest.pojo.PojoArtifact;
+import at.jku.sea.cloud.rest.pojo.PojoArtifactAndFilters;
+import at.jku.sea.cloud.rest.pojo.PojoArtifactAndProperties;
+import at.jku.sea.cloud.rest.pojo.PojoArtifactAndPropertyFilter;
+import at.jku.sea.cloud.rest.pojo.PojoArtifactRepAndPropertiesRep;
+import at.jku.sea.cloud.rest.pojo.PojoObject;
+import at.jku.sea.cloud.rest.pojo.PojoPropertyFilter;
+import at.jku.sea.cloud.rest.pojo.factory.PojoFactory;
+import at.jku.sea.cloud.rest.server.factory.DesignSpaceFactory;
+
+public class ContainerHandler {
+  
+  @Autowired
+  protected Cloud cloud;
+  @Autowired
+  protected PojoFactory pojoFactory;
+  @Autowired
+  protected DesignSpaceFactory dsFactory;
+  
+  public Boolean containsArtifact(long id, long version, PojoArtifact pojo) {
+    Resource resource = (Resource) cloud.getArtifact(version, id);
+    Artifact artifact = cloud.getArtifact(pojo.getVersion(), pojo.getId());
+    return resource.containsArtifact(artifact);
+  }
+  
+  public PojoArtifact[] getArtifacts(long id, long version) {
+    Container container = (Container) cloud.getArtifact(version, id);
+    Collection<Artifact> artifacts = container.getArtifacts();
+    return pojoFactory.createPojoArray(artifacts.toArray(new Artifact[0]));
+  }
+  
+  public PojoArtifact[] getArtifact(long id, long version, PojoArtifact[] filters) {
+    Filter filter = dsFactory.createFilter(filters);
+    
+    Container container = (Container) cloud.getArtifact(version, id);
+    Collection<Artifact> artifacts = container.getArtifacts(filter);
+    return pojoFactory.createPojoArray(artifacts.toArray(new Artifact[0]));
+  }
+  
+  public PojoArtifact[] getArtifactsWithProperty(long id, long version, boolean alive,
+      PojoArtifactAndPropertyFilter filter) {
+    Filter f = dsFactory.createFilter(filter.getArtifacts());
+    Map<String, Object> propertyToValue = convertPropertyToValueMap(filter.getPropertyFilters());
+    
+    Container container = (Container) cloud.getArtifact(version, id);
+    Collection<Artifact> art = container.getArtifactsWithProperty(propertyToValue, alive, f);
+    return pojoFactory.createPojoArray(art.toArray(new Artifact[0]));
+  }
+  
+  public PojoArtifact[] getArtifactsWithReference(long id, long version, PojoArtifactAndFilters artifactAndFilter) {
+    Filter filter = dsFactory.createFilter(artifactAndFilter.getFilters());
+    Artifact artifact = cloud.getArtifact(artifactAndFilter.getArtifact().getVersion(),
+        artifactAndFilter.getArtifact().getId());
+    
+    Container container = (Container) cloud.getArtifact(version, id);
+    Collection<Artifact> result = container.getArtifactsWithReference(artifact, filter);
+    return pojoFactory.createPojoArray(result.toArray(new Artifact[0]));
+  }
+  
+  public PojoArtifactAndProperties[] getArtifactAndProperties(long id, long version) {
+    Container container = (Container) cloud.getArtifact(version, id);
+    Map<Artifact, Set<Property>> map = container.getArtifactAndProperties();
+    return pojoFactory.createPojoArray(map);
+  }
+  
+  public PojoArtifactAndProperties[] getArtifactsAndPropertyMap(long id, long version) {
+    Container container = (Container) cloud.getArtifact(version, id);
+    Map<Artifact, Map<String, Object>> mappings = container.getArtifactPropertyMap();
+    return pojoFactory.createPojoMappings(mappings);
+  }
+  
+  public PojoArtifactAndProperties[] getArtifactsAndPropertyMap(long id, long version, boolean alive,
+      PojoArtifactAndPropertyFilter filter) {
+    Filter artFilters = dsFactory.createFilter(filter.getArtifacts());
+    
+    Container container = (Container) cloud.getArtifact(version, id);
+    
+    PojoPropertyFilter[] propertyFilters = filter.getPropertyFilters();
+    Map<Artifact, Map<String, Object>> artifactsAndPropertyMap = null;
+    if (propertyFilters == null) {
+      artifactsAndPropertyMap = container.getArtifactsAndPropertyMap(artFilters);
+    } else {
+      Map<String, Object> propertyToValue = new HashMap<String, Object>();
+      for (int i = 0; i < propertyFilters.length; i++) {
+        String name = propertyFilters[i].getName();
+        PojoObject pojoObject = propertyFilters[i].getValue();
+        propertyToValue.put(name, pojoObject.getObject());
+      }
+      artifactsAndPropertyMap = container.getArtifactsAndPropertyMap(propertyToValue, alive, artFilters);
+    }
+    
+    return pojoFactory.createPojoMappings(artifactsAndPropertyMap);
+  }
+  
+  public PojoObject[] getArtifactRepresentation(long id, long version) {
+    Container container = (Container) cloud.getArtifact(version, id);
+    Object[] ob = container.getArtifactRepresentations().toArray(new Object[0]);
+    return pojoFactory.createPojoArray(ob);
+  }
+  
+  public PojoArtifactRepAndPropertiesRep[] getArtifactPropertyMapRepresentations(long id, long version) {
+    Container container = (Container) cloud.getArtifact(version, id);
+    Map<Object[], Set<Object[]>> map = container.getArtifactPropertyMapRepresentations();
+    PojoArtifactRepAndPropertiesRep[] result = pojoFactory.createPojoArrayRep(map);
+    return result;
+  }
+  
+  private Map<String, Object> convertPropertyToValueMap(PojoPropertyFilter[] propertyFilters) {
+    Map<String, Object> propertyToValue = new HashMap<String, Object>();
+    
+    for (int i = 0; i < propertyFilters.length; i++) {
+      String name = propertyFilters[i].getName();
+      PojoObject pojoObject = propertyFilters[i].getValue();
+      propertyToValue.put(name, pojoObject.getObject());
+    }
+    
+    return propertyToValue;
+  }
+}

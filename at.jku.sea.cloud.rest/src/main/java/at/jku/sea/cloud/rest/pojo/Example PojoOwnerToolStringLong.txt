@@ -1,0 +1,15 @@
+{
+  "owner" : {
+    "__type" : "Owner",
+    "id" : 20,
+    "version" : 1,
+    "md5Password" : ""
+  },
+  "tool" : {
+    "__type" : "Tool",
+    "id" : 33,
+    "version" : 1
+  },
+  "string" : "ws",
+  "long" : null
+}
