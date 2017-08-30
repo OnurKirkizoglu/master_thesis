@@ -53,7 +53,7 @@ import javafx.stage.Stage;
 import matrix.MatrixView;
 
 public class LinkApplication extends Application implements ModelListener {
-
+	// best matrix view ever
 	private MMMDataModel model;
 	private MMMHelper helper;
 	private MatrixView matrixView;
