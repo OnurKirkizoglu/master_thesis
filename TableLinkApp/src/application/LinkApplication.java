@@ -20,6 +20,7 @@ import at.jku.sea.cloud.Package;
 import at.jku.sea.cloud.User;
 import at.jku.sea.cloud.exceptions.CredentialsException;
 import at.jku.sea.cloud.rest.client.RestCloud;
+import graph.GraphView;
 import init.Constants;
 import init.MMMHelper;
 import init.setup.Link;
@@ -107,7 +108,9 @@ public class LinkApplication extends Application implements ModelListener {
 		BorderPane root = new BorderPane();
 		root.setTop(bars);
 		root.setBottom(saveBar);
-		root.setCenter(matrixView);
+//		root.setCenter(matrixView);
+		GraphView view = new GraphView(model);
+		root.setCenter(view);
 
 		Button saveButton = new Button("SAVE LINKS");
 		saveButton.setOnAction(event -> {
@@ -164,6 +167,8 @@ public class LinkApplication extends Application implements ModelListener {
 	private void refreshSelections() {
 		ObservableList<Artifact> checkedSourceItems = sourceCheckComboBox.getCheckModel().getCheckedItems();
 		ObservableList<Artifact> checkedTargettems = targetCheckComboBox.getCheckModel().getCheckedItems();
+		Link selectedItem = linkComboBox.getSelectionModel().getSelectedItem();
+		
 		sourceCheckComboBox.getItems().clear();
 		targetCheckComboBox.getItems().clear();
 		linkComboBox.getItems().clear();
@@ -183,7 +188,11 @@ public class LinkApplication extends Application implements ModelListener {
 
 		linkComboBox.getItems().addAll(GUIHelper.createSortedComboBoxLinkList(model.getDefinedLinks(),
 				new Link(Constants.COMBOBOX_ALL_SELECTION)));
-		linkComboBox.getSelectionModel().select(0);
+		if(selectedItem == null){
+			linkComboBox.getSelectionModel().select(0);
+		}else{
+			linkComboBox.getSelectionModel().select(selectedItem);
+		}
 	}
 
 	@Override

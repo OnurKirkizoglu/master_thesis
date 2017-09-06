@@ -31,7 +31,6 @@ public class MMMDataModel {
 	// list of views
 	private final List<ModelListener> listeners = new ArrayList<>();
 
-	// TODO one data package selection for source/target together?
 	private final Set<Package> dataPackages = new HashSet<>();
 
 	public MMMDataModel(MMMHelper helper, String... packageIDs) {

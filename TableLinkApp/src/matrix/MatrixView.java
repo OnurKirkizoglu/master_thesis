@@ -136,10 +136,10 @@ public class MatrixView extends StackPane implements ModelListener {
 				if (mElement.isToBeProcessed()) {
 					if (mElement.isLinkExists()) {
 						matrix[row][col] = new MatrixElement(
-								model.addLinkInstance("ONUR", matrixLink.isMultipleLink() ? null : matrixLink,
+								model.addLinkInstance(null, matrixLink.isMultipleLink() ? null : matrixLink,
 										(matrix[row][0]).getHeaderInstance(), (matrix[0][col]).getHeaderInstance()));
 					} else {
-						model.removeLinkInstance("ONUR", matrix[row][0].getHeaderInstance(),
+						model.removeLinkInstance(null, matrix[row][0].getHeaderInstance(),
 								matrix[0][col].getHeaderInstance(), matrix[row][col].getLinkInstance());
 						matrix[row][col] = new MatrixElement(null);
 					}
@@ -164,7 +164,7 @@ public class MatrixView extends StackPane implements ModelListener {
 							triple.setAvailable(false);
 						} else if (!triple.isAvailable() && triple.isToCreate()) {
 							// create link and store it
-							triple.setLink(model.addLinkInstance("ONUR", defLink, (matrix[row][0]).getHeaderInstance(),
+							triple.setLink(model.addLinkInstance(null, defLink, (matrix[row][0]).getHeaderInstance(),
 									(matrix[0][col]).getHeaderInstance()));
 							triple.setAvailable(true);
 						}
