@@ -42,6 +42,7 @@ public class MatrixElement {
 	// single link constructor
 	public MatrixElement(Link linkInstance) {
 		type = MatrixElementType.SINGLE_LINK;
+		// TODO switch to link.getInstance instead of link.getComplexType()
 		this.linkInstance = linkInstance != null ? linkInstance.getComplexType() : null;
 	}
 
@@ -105,6 +106,7 @@ public class MatrixElement {
 		for (Link defLink : listOfDefinedLinks) {
 			foundInstance = false;
 			for (Link curInstance : listOfLinkInstances) {
+				// TODO switch to curInstance.getInstance() instead of curInstance.getComplexType()
 				if (defLink.getComplexType().equals(curInstance.getComplexType().getType())) {
 					linksToBeProcessed.put(defLink, new Triple(curInstance, true, true));
 					foundInstance = true;

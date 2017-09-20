@@ -8,7 +8,6 @@ import java.util.Set;
 
 import application.MMMDataModel;
 import application.setup.LinkListDialog;
-import application.setup.ModelListener;
 import application.setup.Triple;
 import at.jku.sea.cloud.Artifact;
 import init.setup.Link;
@@ -17,7 +16,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
-public class MatrixView extends StackPane implements ModelListener {
+public class MatrixView extends StackPane{
 	private MMMDataModel model;
 	private WebView webView;
 	private WebEngine webEngine;
@@ -48,6 +47,49 @@ public class MatrixView extends StackPane implements ModelListener {
 		window.setMember("matrix", this);
 		window.setMember("java", new JavaOutput());
 		webEngine.executeScript("refreshMatrix()");
+	}
+
+	public void addLink(int row, int col) {
+		matrix[row][col] = new MatrixElement(row, col, true, null);
+	}
+
+	public void deleteLink(int row, int col) {
+		matrix[row][col] = new MatrixElement(row, col, false, matrix[row][col].getLinkInstance());
+	}
+
+	public void saveLinks() {
+		if (matrixLink != null && matrixLink.isMultipleLink()) {
+			saveMultipleLinks();
+		} else {
+			saveSingleLinks();
+		}
+	}
+
+	public void showMultipleLinks(int row, int col) {
+		if (!matrix[row][col].isToBeProcessed()) {
+			List<Link> linkInstances = model.getLinkInstances(matrix[row][0].getHeaderInstance(),
+					matrix[0][col].getHeaderInstance(), matrix[row][col].getDefinedLinks());
+			matrix[row][col].setListOfLinkInstances(linkInstances);
+		}
+
+		matrix[row][col].setToBeProcessed(true);
+		new LinkListDialog(matrix[row][col]).showAndWait();
+	}
+
+	public String getStringElement(int row, int col) {
+		return (matrix[row][col]).toString();
+	}
+
+	public boolean isMultipleMatrix() {
+		return matrixLink.isMultipleLink();
+	}
+
+	public int getRowSize() {
+		return matrix.length;
+	}
+
+	public int getColSize() {
+		return matrix[0].length;
 	}
 
 	private void updateMatrix(Map<Artifact, Set<Artifact>> source, Map<Artifact, Set<Artifact>> target,
@@ -85,7 +127,8 @@ public class MatrixView extends StackPane implements ModelListener {
 					temp = targetList.get(col - 1);
 					matrix[row][col] = new MatrixElement(temp.getHeaderComplexType(), temp.getHeaderInstance());
 				} else { // data
-					if (currentLink.isMultipleLink()) { // multiple links possible
+					if (currentLink.isMultipleLink()) { // multiple links
+														// possible
 						matrix[row][col] = new MatrixElement(
 								(model.getDefinedLinks(matrix[row][0].getHeaderComplexType(),
 										matrix[0][col].getHeaderComplexType())),
@@ -97,38 +140,9 @@ public class MatrixView extends StackPane implements ModelListener {
 				}
 			}
 		}
-
-	}
-
-	public void addLink(int row, int col) {
-		// source: row/0 target: 0/col
-		matrix[row][col] = new MatrixElement(row, col, true, null);
-	}
-
-	public void deleteLink(int row, int col) {
-		matrix[row][col] = new MatrixElement(row, col, false, matrix[row][col].getLinkInstance());
-	}
-
-	public String getStringElement(int row, int col) {
-		return (matrix[row][col]).toString();
-	}
-
-	public int getRowSize() {
-		return matrix.length;
-	}
-
-	public int getColSize() {
-		return matrix[0].length;
-	}
-
-	public void saveLinks(){
-		if(matrixLink != null && matrixLink.isMultipleLink()){
-			saveMultipleLinks();
-		}else{
-			saveSingleLinks();
-		}
-	}
-	public void saveSingleLinks() {
+	}	
+	
+	private void saveSingleLinks() {
 		MatrixElement mElement;
 		for (int row = 1; row < row_size; row++) {
 			for (int col = 1; col < col_size; col++) {
@@ -148,7 +162,7 @@ public class MatrixView extends StackPane implements ModelListener {
 		}
 	}
 
-	public void saveMultipleLinks() {
+	private void saveMultipleLinks() {
 		MatrixElement mElement;
 		for (int row = 1; row < row_size; row++) {
 			for (int col = 1; col < col_size; col++) {
@@ -174,46 +188,11 @@ public class MatrixView extends StackPane implements ModelListener {
 		}
 	}
 
-	public void showMultipleLinks(int row, int col) {
-		if (!matrix[row][col].isToBeProcessed()) {
-			List<Link> linkInstances = model.getLinkInstances(matrix[row][0].getHeaderInstance(),
-					matrix[0][col].getHeaderInstance(), matrix[row][col].getDefinedLinks());
-			matrix[row][col].setListOfLinkInstances(linkInstances);
-		}
-
-		matrix[row][col].setToBeProcessed(true);
-		new LinkListDialog(matrix[row][col]).showAndWait();
-
-	}
-
-	public boolean isMultipleMatrix() {
-		return matrixLink.isMultipleLink();
-	}
-
+	// TODO delete!
 	public class JavaOutput {
 
 		public void println(String output) {
 			System.out.println(output);
 		}
-	}
-
-	@Override
-	public void dataPackagesChanged() {
-
-	}
-
-	@Override
-	public void dataContentChanged() {
-
-	}
-
-	@Override
-	public void linkPackageChanged() {
-
-	}
-
-	@Override
-	public void linkContentChanged() {
-
 	}
 }

@@ -20,6 +20,7 @@ import at.jku.sea.cloud.Package;
 import at.jku.sea.cloud.User;
 import at.jku.sea.cloud.exceptions.CredentialsException;
 import at.jku.sea.cloud.rest.client.RestCloud;
+import graph.Control;
 import graph.GraphView;
 import init.Constants;
 import init.MMMHelper;
@@ -34,16 +35,19 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -54,10 +58,10 @@ import javafx.stage.Stage;
 import matrix.MatrixView;
 
 public class LinkApplication extends Application implements ModelListener {
-	// best matrix view ever
 	private MMMDataModel model;
 	private MMMHelper helper;
 	private MatrixView matrixView;
+	private GraphView graphView;
 
 	private CheckComboBox<Artifact> sourceCheckComboBox;
 	private CheckComboBox<Artifact> targetCheckComboBox;
@@ -65,10 +69,19 @@ public class LinkApplication extends Application implements ModelListener {
 
 	private DefineLinkDialog defineLinkDialog;
 	private MenuItem defineLinkMenuItem;
+	private CheckMenuItem matrixItem;
 
-	GridPane sourcePane = new GridPane();
-	GridPane targetPane = new GridPane();	
-	ToolBar toolBar;
+	private BorderPane root;
+	private GridPane sourcePane = new GridPane();
+	private GridPane targetPane = new GridPane();
+	private ToolBar toolBar;
+	private ToolBar graphHandlingBar;
+	private Label sourceLabel;
+	private Label targetLabel;
+	private VBox bars;
+
+	private final int BARS_HEIGHT = 200;
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -90,31 +103,31 @@ public class LinkApplication extends Application implements ModelListener {
 		model = new MMMDataModel(helper);
 		model.addListener(this);
 
-		VBox bars = new VBox();
+		defineLinkDialog = new DefineLinkDialog(model);
+		matrixView = new MatrixView(model);
+		graphView = new GraphView(model);
+		
+		root = new BorderPane();
+		bars = new VBox();
 		MenuBar menuBar = createMenuBar();
 		toolBar = createToolBar();
+		graphHandlingBar = createGrahpHandlingBar();
 		menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
 		toolBar.prefWidthProperty().bind(primaryStage.widthProperty());
 		bars.getChildren().addAll(menuBar, toolBar);
-
+		bars.setMaxHeight(BARS_HEIGHT);
+		
 		ToolBar saveBar = new ToolBar();
 		HBox spacer = new HBox();
 		spacer.setHgrow(spacer, Priority.ALWAYS);
 		saveBar.getItems().add(spacer);
-
-		defineLinkDialog = new DefineLinkDialog(model);
-		matrixView = new MatrixView(model);
-
-		BorderPane root = new BorderPane();
-		root.setTop(bars);
-		root.setBottom(saveBar);
-//		root.setCenter(matrixView);
-		GraphView view = new GraphView(model);
-		root.setCenter(view);
-
 		Button saveButton = new Button("SAVE LINKS");
 		saveButton.setOnAction(event -> {
-			matrixView.saveLinks();
+			if(matrixItem.isSelected()){
+				matrixView.saveLinks();
+			}else{
+				graphView.saveLinks();
+			}
 		});
 
 		saveButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -128,6 +141,12 @@ public class LinkApplication extends Application implements ModelListener {
 				.collect(Collectors.toList());
 		model.setDataPackages(collect);
 
+		
+		root.setTop(bars);
+		setView(matrixView); // center
+		root.setBottom(saveBar);
+		root.requestFocus();
+
 		// set size of the application to the corresponding window resolution
 		primaryStage.setTitle("Linking Tool by Onur Kirkizoglu");
 		primaryStage.setScene(new Scene(root));
@@ -140,10 +159,11 @@ public class LinkApplication extends Application implements ModelListener {
 		primaryStage.show();
 	}
 
-	private void refreshMatrix() {
+	private void refreshGraph() {
 		Map<Artifact, Set<Artifact>> sourceData;
 		Map<Artifact, Set<Artifact>> targetData;
 		Link selectedLink = linkComboBox.getSelectionModel().getSelectedItem();
+		
 		// if link is specified, only certain source/target is possible
 		if (!selectedLink.isMultipleLink()) {
 			sourceData = model.getDataMap().entrySet().stream().filter(map -> {
@@ -160,7 +180,31 @@ public class LinkApplication extends Application implements ModelListener {
 					.filter(map -> targetCheckComboBox.getCheckModel().getCheckedItems().contains(map.getKey()))
 					.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 		}
-
+		
+		graphView.update(sourceData, targetData, selectedLink);
+	}
+	
+	private void refreshMatrix() {
+		Map<Artifact, Set<Artifact>> sourceData;
+		Map<Artifact, Set<Artifact>> targetData;
+		Link selectedLink = linkComboBox.getSelectionModel().getSelectedItem();
+		
+		// if link is specified, only certain source/target is possible
+		if (!selectedLink.isMultipleLink()) {
+			sourceData = model.getDataMap().entrySet().stream().filter(map -> {
+				return selectedLink.getSource().equals(map.getKey());
+			}).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+			targetData = model.getDataMap().entrySet().stream().filter(map -> {
+				return selectedLink.getTarget().equals(map.getKey());
+			}).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+		} else {
+			sourceData = model.getDataMap().entrySet().stream().filter(map -> {
+				return sourceCheckComboBox.getCheckModel().getCheckedItems().contains(map.getKey());
+			}).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+			targetData = model.getDataMap().entrySet().stream()
+					.filter(map -> targetCheckComboBox.getCheckModel().getCheckedItems().contains(map.getKey()))
+					.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+		}
 		matrixView.update(sourceData, targetData, selectedLink);
 	}
 
@@ -168,19 +212,19 @@ public class LinkApplication extends Application implements ModelListener {
 		ObservableList<Artifact> checkedSourceItems = sourceCheckComboBox.getCheckModel().getCheckedItems();
 		ObservableList<Artifact> checkedTargettems = targetCheckComboBox.getCheckModel().getCheckedItems();
 		Link selectedItem = linkComboBox.getSelectionModel().getSelectedItem();
-		
+
 		sourceCheckComboBox.getItems().clear();
 		targetCheckComboBox.getItems().clear();
 		linkComboBox.getItems().clear();
 
 		ObservableList<Artifact> sortedList = GUIHelper
 				.createSortedComboBoxArtifactList(new ArrayList<Artifact>(model.getDataMap().keySet()));
-		
+
 		sourceCheckComboBox.getItems().addAll(sortedList);
 		checkedSourceItems.stream().forEach(checkedItem -> {
 			sourceCheckComboBox.getCheckModel().check(checkedItem);
 		});
-		
+
 		targetCheckComboBox.getItems().addAll(sortedList);
 		checkedTargettems.stream().forEach(checkedItem -> {
 			sourceCheckComboBox.getCheckModel().check(checkedItem);
@@ -188,11 +232,14 @@ public class LinkApplication extends Application implements ModelListener {
 
 		linkComboBox.getItems().addAll(GUIHelper.createSortedComboBoxLinkList(model.getDefinedLinks(),
 				new Link(Constants.COMBOBOX_ALL_SELECTION)));
-		if(selectedItem == null){
-			linkComboBox.getSelectionModel().select(0);
-		}else{
+		
+		if(linkComboBox.getItems().contains(selectedItem)){
 			linkComboBox.getSelectionModel().select(selectedItem);
+		}else{
+			linkComboBox.getSelectionModel().select(0);
 		}
+
+		root.requestFocus();
 	}
 
 	@Override
@@ -218,12 +265,12 @@ public class LinkApplication extends Application implements ModelListener {
 	@SuppressWarnings("unchecked")
 	private MenuBar createMenuBar() {
 		MenuBar menuBar = new MenuBar();
+
 		Menu applicationMenu = new Menu("Application");
 
 		MenuItem loadDataMenuItem = new MenuItem("Load Data");
 		loadDataMenuItem.setDisable(false);
 		loadDataMenuItem.setOnAction(actionEvent -> {
-			// TODO temporary list view
 			Optional<List<? extends Artifact>> optional = ListDialog
 					.DataPackageListDialog(helper.getWorkspace().getPackages(), model.getDataPackages()).showAndWait();
 			optional.ifPresent(artifacts -> model.setDataPackages((List<Package>) artifacts));
@@ -237,7 +284,7 @@ public class LinkApplication extends Application implements ModelListener {
 			Optional<List<? extends Artifact>> optional = ListDialog
 					.LinkPackageListDialog(helper, linkPackages, model.getLinkPackage()).showAndWait();
 			optional.ifPresent(artifacts -> model.setLinkPackage((Package) artifacts.get(0)));
-			refreshMatrix();
+			refreshView();
 		});
 
 		defineLinkMenuItem = new MenuItem("Define Link");
@@ -251,7 +298,41 @@ public class LinkApplication extends Application implements ModelListener {
 
 		applicationMenu.getItems().addAll(loadDataMenuItem, configureDataMenuItem, new SeparatorMenuItem(),
 				defineLinkMenuItem, exitMenuItem);
-		menuBar.getMenus().addAll(applicationMenu);
+
+		Menu viewMenu = new Menu("View");
+		matrixItem = new CheckMenuItem("Matrix");
+		CheckMenuItem graphItem = new CheckMenuItem("Graph");
+
+		graphItem.setOnAction(actionEvent -> {
+			matrixItem.setSelected(false);
+			
+			BorderPane wrapperPane = new BorderPane();
+	        // Put canvas in the center of the window
+	        wrapperPane.setCenter(graphView);
+	        // Bind the width/height property to the wrapper Pane
+	        graphView.widthProperty().bind(wrapperPane.widthProperty());
+	        graphView.heightProperty().bind(wrapperPane.heightProperty());
+	        // redraw when resized
+	        graphView.widthProperty().addListener(event -> graphView.repaint());
+	        graphView.heightProperty().addListener(event -> graphView.repaint());
+//	        graphHandlingBar.setVisible(true);
+	        bars.getChildren().add(graphHandlingBar);
+	        refreshGraph();
+			setView(wrapperPane);
+		});
+		matrixItem.setOnAction(actionEvent -> {
+			graphItem.setSelected(false);
+//			graphHandlingBar.setVisible(false);
+			bars.getChildren().remove(graphHandlingBar);
+			refreshMatrix();
+			setView(matrixView);
+		});
+
+		// initial matrix view is enabled
+		matrixItem.setSelected(true);
+
+		viewMenu.getItems().addAll(matrixItem, graphItem);
+		menuBar.getMenus().addAll(applicationMenu, viewMenu);
 		return menuBar;
 	}
 
@@ -259,7 +340,7 @@ public class LinkApplication extends Application implements ModelListener {
 		GridPane linkPane = new GridPane();
 		GridPane applySelectionPane = new GridPane();
 		ToolBar t = new ToolBar();
-		Label sourceLabel = new Label("SELECTED SOURCES:\t");
+		sourceLabel = new Label("SELECTED SOURCES:\t");
 		sourceLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
 		sourceLabel.setPadding(new Insets(0, 0, 0, 10));
 		sourcePane.add(sourceLabel, 0, 0);
@@ -269,7 +350,7 @@ public class LinkApplication extends Application implements ModelListener {
 		sourcePane.add(sourceCheckComboBox, 1, 0);
 		sourceCheckComboBox.setMinWidth(150);
 
-		Label targetLabel = new Label("SELECTED TARGETS:\t");
+		targetLabel = new Label("SELECTED TARGETS:\t");
 		targetLabel.setPadding(new Insets(0, 0, 0, 10));
 		targetLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
 		targetPane.add(targetLabel, 0, 0);
@@ -290,30 +371,28 @@ public class LinkApplication extends Application implements ModelListener {
 
 		Button applySelection = new Button("APPLY SELECTION");
 		applySelection.setOnAction(event -> {
-			refreshMatrix();
+			refreshView();
 		});
+
 		applySelectionPane.setPadding(new Insets(0, 20, 0, 20));
 		applySelectionPane.add(applySelection, 0, 0);
 		applySelection.setFont(Font.font("Arial", FontWeight.BOLD, 12));
 		applySelection.setTextFill(Color.GREEN);
 		applySelection.setPrefWidth(150);
 
-		t.getItems().add(linkPane);
-		t.getItems().add(sourcePane);
-		t.getItems().add(targetPane);
-		t.getItems().add(applySelectionPane);
-		
+		t.getItems().addAll(linkPane, sourcePane, targetPane, applySelectionPane);
+
 		linkComboBox.valueProperty().addListener(new ChangeListener<Link>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Link> observable, Link oldValue, Link newValue) {
-				if(newValue != null){
-					if(newValue.isMultipleLink()){
+				if (newValue != null) {
+					if (newValue.isMultipleLink()) {
 						toolBar.getItems().remove(sourcePane);
 						toolBar.getItems().remove(targetPane);
 						toolBar.getItems().add(1, sourcePane);
 						toolBar.getItems().add(2, targetPane);
-					}else{
+					} else {
 						toolBar.getItems().remove(sourcePane);
 						toolBar.getItems().remove(targetPane);
 					}
@@ -321,5 +400,65 @@ public class LinkApplication extends Application implements ModelListener {
 			}
 		});
 		return t;
+	}
+
+	private ToolBar createGrahpHandlingBar() {
+		ToolBar t = new ToolBar();
+
+		// move elems
+		Button moveElement = new Button("MOVE ELEMENT");
+		moveElement.setOnAction(event -> {
+			graphView.setGraphController(Control.MOVE);
+			root.requestFocus();
+		});
+		moveElement.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+		moveElement.setTextFill(Color.BLACK);
+		moveElement.setPrefWidth(150);
+		
+		// creation of links between elems
+		Button createLink = new Button("CREATE LINK");
+		createLink.setOnAction(event -> {
+			graphView.setGraphController(Control.CREATE_LINK);
+			root.requestFocus();
+		});
+		createLink.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+		createLink.setTextFill(Color.BLUE);
+		createLink.setPrefWidth(150);
+		
+		// deletion links between elems
+		Button deleteLink = new Button("DELETE LINK");
+		deleteLink.setOnAction(event -> {
+			graphView.setGraphController(Control.DELETE_LINK);
+			root.requestFocus();
+		});	
+		deleteLink.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+		deleteLink.setTextFill(Color.RED);
+		deleteLink.setPrefWidth(150);
+		
+		t.getItems().addAll(moveElement, createLink, deleteLink);
+		return t;
+	}
+
+	
+	private void refreshView() {
+		if (matrixItem.isSelected()) {
+			refreshMatrix();
+		} else {
+			refreshGraph();
+		}
+		root.requestFocus();
+	}
+
+	private void setView(Pane view) {
+		view.setMinSize(4000, 4000);
+		view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+		ScrollPane sp = new ScrollPane(view);
+		sp.setPrefSize(300, 300);
+		sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		sp.setFitToWidth(true);
+		sp.setFitToHeight(true);
+		root.requestFocus();
+		root.setCenter(sp);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.controlsfx.control.CheckListView;
 
+import graph.LinkShape;
 import init.setup.Link;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -15,8 +16,6 @@ import matrix.MatrixElement;
 
 public class LinkListDialog extends Dialog<List<? extends Link>> {
 	private LinkFilterablePane linkPane;
-	@SuppressWarnings("unused")
-	private MatrixElement mElement;
 	HashMap<Link, Triple> links;
 
 	public LinkListDialog MultipleLinkListDialog(MatrixElement elem) {
@@ -26,6 +25,12 @@ public class LinkListDialog extends Dialog<List<? extends Link>> {
 	public LinkListDialog() {
 	}
 
+	// constructor graph view
+	public LinkListDialog(LinkShape elem) {
+		this.links = elem.getLinksToBeProcessed();
+		createContent("Possible links");
+	}
+	// constructor matrix view
 	public LinkListDialog(MatrixElement elem) {
 		this.links = elem.getLinksToBeProcessed();
 		createContent("Possible links");

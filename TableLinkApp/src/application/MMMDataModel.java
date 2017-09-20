@@ -86,6 +86,7 @@ public class MMMDataModel {
 				if (MMMTypeUtils.isOfType(helper.getLinkType(), linkInstance)) {
 					Artifact sourceInstance = (Artifact) linkInstance.getPropertyValue(Constants.LINK_SOURCE);
 					Artifact targetInstance = (Artifact) linkInstance.getPropertyValue(Constants.LINK_TARGET);
+					// TODO: switch linkInstance to LinkInstance variable instead of complexType() OTHER CONSTRUCTOR
 					linkInstances.add(new Link(null, sourceInstance, targetInstance, null, linkInstance));
 				}
 			}
@@ -236,6 +237,7 @@ public class MMMDataModel {
 
 	public synchronized void removeLinkInstance(Link linkInstance) {
 		linkInstances.remove(linkInstance);
+		// TODO switch link.getInstance() instead of link.getComplexType()
 		linkInstance.getComplexType().delete(helper.getWorkspace());
 		helper.commit();
 		fireLinkContentChanged();
@@ -250,7 +252,6 @@ public class MMMDataModel {
 		dataPackages.clear();
 		dataPackages.addAll(packages);
 		refreshDataMap();
-
 		fireDataPackagesChanged();
 	}
 
@@ -292,8 +293,14 @@ public class MMMDataModel {
 		fireLinkContentChanged();
 	}
 
+	/**
+	 * @return a list of link instances based on given <b>source</b> and
+	 *         <b>target</b> instance and defined link.
+	 */	
 	public Link getLinkInstance(Artifact source, Artifact target, Artifact link) {
 		return linkInstances.stream().filter(curInstance -> {
+			// curInstance.getComplexType = Artifact link itself!!!
+			// TODO switch curInstance.getInstance() instead of curInstance.getComplexType()
 			if ((link == null || curInstance.getComplexType().getType().equals(link))
 					&& curInstance.getSource().equals(source) && curInstance.getTarget().equals(target)) {
 				return true;
@@ -317,11 +324,15 @@ public class MMMDataModel {
 		}).collect(Collectors.toList());
 	}
 
+	/**
+	 * @return a list of link instances based on given <b>source</b>,
+	 *         <b>target</b> and defined links
+	 */	
 	public List<Link> getLinkInstances(Artifact source, Artifact target, List<Link> listOfDefinedLinks) {
 		List<Artifact> list = listOfDefinedLinks.stream().map(link -> link.getComplexType())
 				.collect(Collectors.toList());
 		return linkInstances.stream().filter(curInstance -> {
-
+			// TODO switch curInstance.getInstance() instead of curInstance.getComplexType()
 			if (list.contains(curInstance.getComplexType().getType()) && curInstance.getSource().equals(source)
 					&& curInstance.getTarget().equals(target)) {
 				return true;
