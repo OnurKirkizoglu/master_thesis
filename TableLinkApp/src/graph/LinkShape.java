@@ -13,22 +13,26 @@ public class LinkShape {
 	private Artifact complexType;
 	private Artifact linkInstance;
 
-	// single link
+	// specific links
 	private boolean toBeProcessed = false;
 	private boolean linkShouldBeCreated = false;
 	private boolean linkShouldBeDeleted = false;
 
-	// multiple link
+	// non-specific links
 	private List<Link> listOfDefinedLinks;
 	private List<Link> listOfInstanceLinks;
 	private HashMap<Link, Triple> linksToBeProcessed = new HashMap<>();;
 
-	// dummy
+	/**
+	 * Dummy Constructor.
+	 */
 	public LinkShape() {
 
 	}
 
-	// single link between source and target
+	/**
+	 * Constructor for specific links.
+	 */
 	public LinkShape(ArtifactShape sourceShape, ArtifactShape targetShape, Artifact complexType,
 			Artifact linkInstance) {
 		this.source = sourceShape;
@@ -37,7 +41,9 @@ public class LinkShape {
 		this.linkInstance = linkInstance;
 	}
 
-	// multiple link
+	/**
+	 * Constructor for non-specific links.
+	 */
 	public LinkShape(ArtifactShape sourceShape, ArtifactShape targetShape, List<Link> listOfDefinedLinks) {
 		this.source = sourceShape;
 		this.target = targetShape;
@@ -52,6 +58,11 @@ public class LinkShape {
 		return listOfInstanceLinks;
 	}
 
+	/**
+	 * Only for <b>non-specific</b> links. <br>
+	 * This method sets the corresponding process of all defined links by this
+	 * given list of instances.
+	 */
 	public void setListOfInstanceLinks(List<Link> listOfInstanceLinks) {
 		this.listOfInstanceLinks = listOfInstanceLinks;
 
@@ -59,8 +70,7 @@ public class LinkShape {
 		for (Link defLink : listOfDefinedLinks) {
 			foundInstance = false;
 			for (Link curInstance : listOfInstanceLinks) {
-				// TODO switch to curInstance.getInstance() instead of
-				// curInstance.getComplexType()
+				// TODO: Interaction with design space .getType()
 				if (defLink.getComplexType().equals(curInstance.getComplexType().getType())) {
 					linksToBeProcessed.put(defLink, new Triple(curInstance, true, true));
 					foundInstance = true;

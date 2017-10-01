@@ -1,8 +1,6 @@
 package application.setup;
 /** Listener to notificate views when changes occur in the model.
  * 
- * @author Onur Kirkizoglu 08.05.2017
- *
  */
 public interface ModelListener {
     /**

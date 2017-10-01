@@ -226,6 +226,7 @@ public class DefineLinkDialog extends Dialog<Void> {
 					protected void updateItem(Link item, boolean empty) {
 						super.updateItem(item, empty);
 						if (item != null) {
+							// TODO: Interaction with design space
 							String src = (String) (item.getSource())
 									.getPropertyValue(MMMTypeProperties.NAME);
 							String tar = (String) (item.getTarget())
@@ -299,6 +300,7 @@ public class DefineLinkDialog extends Dialog<Void> {
 
 	private void setText(TextField textField, Artifact artifact) {
 		if(artifact == null) return;
+		// TODO: Interaction with design space
 		textField.setText((String) artifact.getPropertyValueOrNull(MMMTypeProperties.NAME));
 	}
 

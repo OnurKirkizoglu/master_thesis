@@ -22,6 +22,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+/**
+ * This class represents the graph representation.
+ */
 public class GraphView extends Canvas {
 
 	private MMMDataModel model;
@@ -48,7 +51,7 @@ public class GraphView extends Canvas {
 		this.setOnMousePressed(onMousePressedEventHandler);
 		this.setOnMouseDragged(onMouseDraggedEventHandler);
 
-		setGraphController(Control.MOVE);
+		setGraphController(Control.MOVE); // default
 		cursorDeleteLink = new ImageCursor(new Image("file:res/delete.png"));
 	}
 
@@ -176,6 +179,8 @@ public class GraphView extends Canvas {
 		ArtifactShape sourceShape = null;
 		ArtifactShape targetShape = null;
 
+		// loading of sources and targets
+
 		for (Entry<Artifact, Set<Artifact>> sourceComplexType : selectedSources.entrySet()) {
 			for (Artifact sourceInstance : sourceComplexType.getValue()) {
 				sourceShape = addArtifactToShapeList(sourceList, "S: ", sourceComplexType, sourceInstance, sourcePosX,
@@ -218,11 +223,21 @@ public class GraphView extends Canvas {
 		repaint(sourceList, targetList, linkList, graphLink);
 	}
 
+	public void saveLinks() {
+		if (graphLink.isMultipleLink()) {
+			saveMultipleLinks();
+		} else {
+			saveSingleLinks();
+		}
+	}
+
+	/**
+	 * Only for non-specific links to handle link between two artifacts.
+	 */
 	private void showMultipleLinks(ArtifactShape sourceShape, ArtifactShape targetShape) {
 		LinkShape searchedLink = new LinkShape();
 		for (LinkShape link : linkList) {
-			if (link.getSource().equals(sourceShape)
-					&& link.getTarget().equals(targetShape)) {
+			if (link.getSource().equals(sourceShape) && link.getTarget().equals(targetShape)) {
 				List<Link> linkInstances = model.getLinkInstances(sourceShape.getInstance(), targetShape.getInstance(),
 						link.getListOfDefinedLinks());
 				link.setListOfInstanceLinks(linkInstances);
@@ -234,6 +249,9 @@ public class GraphView extends Canvas {
 		new LinkListDialog(searchedLink).showAndWait();
 	}
 
+	/**
+	 * Specific link should be created between two artifacts.
+	 */
 	private void addSingleLink(ArtifactShape source, ArtifactShape target) {
 		LinkShape existingLinkShape = null;
 		for (LinkShape linkShape : linkList) {
@@ -257,6 +275,9 @@ public class GraphView extends Canvas {
 		}
 	}
 
+	/**
+	 * Specific link should be deleted between two artifacts.
+	 */
 	private void deleteSingleLink(ArtifactShape source, ArtifactShape target) {
 		LinkShape existingLinkShape = null;
 		for (LinkShape linkShape : linkList) {
@@ -331,6 +352,7 @@ public class GraphView extends Canvas {
 
 	private ArtifactShape addArtifactToShapeList(List<ArtifactShape> list, String prefix,
 			Entry<Artifact, Set<Artifact>> targetComplexType, Artifact targetInstance, double posX, double posY) {
+		// TODO Interaction with design space .getPropertyValueOrNull()
 		String name = prefix + (String) targetComplexType.getKey().getPropertyValueOrNull(MMMTypeProperties.NAME) + "/"
 				+ (String) targetInstance.getPropertyValueOrNull(MMMTypeProperties.NAME);
 		double width = name.length() * RECT_TEXT_CHAR_WIDTH;
@@ -345,14 +367,11 @@ public class GraphView extends Canvas {
 				&& sceneY < rect.getY() + rect.getHeight());
 	}
 
-	public void saveLinks() {
-		if (graphLink.isMultipleLink()) {
-			saveMultipleLinks();
-		} else {
-			saveSingleLinks();
-		}
-	}
-
+	/**
+	 * Saving process of a <b>specific</b> link.<br>
+	 * Only those elements with <b>processed flag = true</b> will be processed.
+	 *
+	 */
 	private void saveSingleLinks() {
 		List<LinkShape> toBeDeleted = new ArrayList<>();
 		for (LinkShape linkShape : linkList) {
@@ -373,6 +392,10 @@ public class GraphView extends Canvas {
 		repaint();
 	}
 
+	/**
+	 * Saving process of a <b>non specific</b> link. <br>
+	 * Only those elements with <b>processed flag = true</b> will be processed.
+	 */
 	private void saveMultipleLinks() {
 		linkList.stream().forEach(link -> {
 			if (link.isToBeProcessed()) {

@@ -1,0 +1,9 @@
+1.) replace folder
+2.) git status to check changes
+3.) git add . (add all new file changes)
+4.) git status (check all green :-)
+5.) git commit -m "message"
+6.) git push
+-------------------------------------------
+git pull (download from repository)
+git clone (clones repository- 1. command/new pc)

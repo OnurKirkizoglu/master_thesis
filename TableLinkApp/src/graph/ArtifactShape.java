@@ -1,7 +1,10 @@
 package graph;
 
 import at.jku.sea.cloud.Artifact;
-
+/**
+ * This class represents an artifact in graph.
+ *
+ */
 public class ArtifactShape {
 	private double x;
 	private double y;
@@ -9,10 +12,8 @@ public class ArtifactShape {
 	private double height;
 	private Artifact complexType;
 	private Artifact instance;
-	
-	// due to performance problems
 	private String name;
-
+	
 	public ArtifactShape(double x, double y, double width, double height, String name, Artifact complexType,
 			Artifact instance) {
 		this.x = x;

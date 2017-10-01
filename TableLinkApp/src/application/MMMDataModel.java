@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 import application.setup.ModelListener;
 
+// TODO: WHOLE class interacts with design space
+
 public class MMMDataModel {
 	private final MMMHelper helper;
 

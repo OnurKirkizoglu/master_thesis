@@ -24,6 +24,7 @@
 
 	<script>
 	
+	// creating of new matrix by give row/col size.
 	function createJsMatrix(rows, cols){
 		  var arr = [];
 
@@ -37,13 +38,14 @@
 		      arr[i].push( new Array(cols));
 
 		      for(var j=0; j < cols; j++){
-		        // Initializes:
+		    	// inititialize element
 		        arr[i][j] = matrix.getStringElement(i,j);
 		      }
 		  }
 		  return arr;
 	}
-	  
+	
+	
 	function refreshMatrix() {
 		// column header
 		var listOfColumnModels = [];
@@ -51,13 +53,18 @@
 		var mydata = [];
 		// transformation from string2dmatrix in javafx to var2dmatrix in js
 		var jsMatrix = createJsMatrix(matrix.getRowSize(), matrix.getColSize());
-		// create columns
+		
+		// creation of columns incl. there attributes.
 		for(var col = 0; col < jsMatrix[0].length;col++){
+			// freeze first column to enable horizontal scrolling
 			if(col == 0){
 				listOfColumnModels.push({
 					label: "" + jsMatrix[0][col], name: ""+jsMatrix[0][col], frozen: true, align: 'center'
 			    });	
 			}else{
+				// If non specific link is selected, create a button for each element with text = number of defined links,
+				// between source and targets.
+				
 				if(matrix.isMultipleMatrix()){
 					// multiple links
 					listOfColumnModels.push({
@@ -66,7 +73,8 @@
 	                    }
 					});
 				}else{
-					//single link
+					// If specific link is selected, created checkbox for each element.
+					// If link exists between source and target, enable checkbox, else disable.
 					listOfColumnModels.push({
 						label: "" + jsMatrix[0][col], name: ""+jsMatrix[0][col], formatter: "checkbox", formatoptions: { disabled: false},
 			            edittype: "checkbox", editoptions: {value: "true:false", defaultValue: "false"}, align: 'center'
@@ -75,7 +83,7 @@
 			}
 		}
 		
-		// insert rows
+		// insertion of data (rows)
 		for(var row =1; row < jsMatrix.length;row++){
 			var obj;
 			for(var col = 0; col < jsMatrix[row].length;col++){
@@ -84,6 +92,7 @@
 			mydata.push(obj);	
 		}
 		
+		// creation of matrix view with several options
 		$(document).ready(function () {
 	        $("#jqGrid").jqGrid({
 	            datatype: "local",
@@ -100,12 +109,15 @@
                     var $target = $(e.target), $td = $target.closest("td"),
                         iCol = $.jgrid.getCellIndex($td[0]),
                         colModel = $(this).jqGrid("getGridParam", "colModel");
+                    
+                    // calls different methods for specifc link during action with checkboxes.
                     if (iCol >= 0 && $target.is(":checkbox")) {
                         $target.is(":checked")? matrix.addLink(rowid, iCol-1) : matrix.deleteLink(rowid, iCol-1);
                     }
                     return true;
                 },
                 onCellSelect: function(rowid,icol,cellcontent,e){
+                	// calls a dialog for non specific link, if button is pressed.
                     matrix.showMultipleLinks(rowid, (icol-1));
                     return true;
                 }
@@ -116,6 +128,7 @@
     	$("#jqGrid").jqGrid("setFrozenColumns");
 	}
 	
+	// removing/unloading of existing matrix
 	function removeMatrix(){
 		$.jgrid.gridUnload('#jqGrid'); 
 	}

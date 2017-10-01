@@ -3,11 +3,13 @@ import init.setup.Link;
 
 public class Triple {
 	private Link link;
+	// available and toCreate are needed for saving process.
+	
+	// True if link is available, else false
 	private boolean available;
-
-	/* needed for save process
-	 if toCreate is true: link have to be create, if available is false: else do nothing
-	 if toCreate is false: link have to be delete, if available is true, else do nothing */
+	// Depends on field available:
+	// - If available is true: If toCreate is true: do nothing, else delete link.
+	// - If available is false:If toCreate is true: link have to be create, else do nothing
 	private boolean toCreate;
 	
 	public Triple(Link link, boolean available, boolean toCreate){

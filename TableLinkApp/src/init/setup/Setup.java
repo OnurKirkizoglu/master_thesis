@@ -10,7 +10,7 @@ import init.MMMHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-
+// TODO: Whole class interacts with design space.
 public class Setup {
 	
 	private Workspace ws;

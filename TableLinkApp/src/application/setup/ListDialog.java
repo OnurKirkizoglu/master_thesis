@@ -83,7 +83,9 @@ public class ListDialog extends Dialog<List<? extends Artifact>> {
         b.setOnAction(e -> {
             if(field.getText().trim().isEmpty()) return;
             // create package and set property
+			// TODO: Interaction with design space
             Package pkg = helper.getWorkspace().createPackage(field.getText());
+			// TODO: Interaction with design space
             Property isLinkPackage = pkg.createProperty(helper.getWorkspace(), Constants.PACKAGE_LINK_PROPERTY);
             isLinkPackage.setValue(helper.getWorkspace(), true);
             helper.commit();

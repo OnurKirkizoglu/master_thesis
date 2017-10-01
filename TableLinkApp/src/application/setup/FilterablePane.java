@@ -107,9 +107,11 @@ public class FilterablePane extends GridPane {
                     protected void updateItem(Artifact item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item != null) {
+							// TODO: Interaction with design space
                             StringBuilder sb = new StringBuilder();
                             setText((String) item.getPropertyValueOrNull(MMMTypeProperties.NAME));
 
+							// TODO: Interaction with design space
                             for (Property p : item.getAliveProperties()) {
                                 sb.append(p.getName() + ":\t" + (p.getValue() == null ? "" : p.getValue().toString()) + "\n");
                             }
@@ -143,6 +145,7 @@ public class FilterablePane extends GridPane {
                 super.updateItem(item, empty);
                 if (item != null) {
                     StringBuilder sb = new StringBuilder();
+					// TODO: Interaction with design space
                     setText((String) item.getPropertyValueOrNull(MMMTypeProperties.NAME));
 
                     for (Property p : item.getAliveProperties()) {
@@ -178,6 +181,7 @@ public class FilterablePane extends GridPane {
             filteredData.setPredicate(null);
         } else {
             filteredData.setPredicate(s -> {
+				// TODO: Interaction with design space
                 String artifactName = (String) s.getPropertyValueOrNull(instanceOfPackage ? DataStorage.PROPERTY_NAME : MMMTypeProperties.NAME);
                 return artifactName != null && artifactName.toLowerCase().contains(text.toLowerCase());
             });
@@ -211,6 +215,7 @@ public class FilterablePane extends GridPane {
         // set boolean to indicate which type of elements are displayed
         instanceOfPackage = items.toArray()[0] instanceof RestPackage;
         list.addAll(items);
+		// TODO: Interaction with design space
         list.sort((o1, o2) -> {
             Artifact a = (Artifact) o1;
             Artifact b = (Artifact) o2;

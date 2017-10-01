@@ -12,6 +12,7 @@ import org.controlsfx.control.CheckComboBox;
 import application.setup.DefineLinkDialog;
 import application.setup.GUIHelper;
 import application.setup.ListDialog;
+import application.setup.LoginDialog;
 import application.setup.ModelListener;
 import at.jku.sea.cloud.Artifact;
 import at.jku.sea.cloud.Cloud;
@@ -57,6 +58,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import matrix.MatrixView;
 
+/**
+ * 
+ * @author Onur Kirkizoglu
+ * 
+ * Main Class. Start of Application
+ */
 public class LinkApplication extends Application implements ModelListener {
 	private MMMDataModel model;
 	private MMMHelper helper;
@@ -90,15 +97,15 @@ public class LinkApplication extends Application implements ModelListener {
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setOnCloseRequest(e -> Platform.exit());
-
 		Cloud cloud = RestCloud.getInstance();
 		User user = null;
 
-		try {
-			user = cloud.getUserByCredentials("oKirkizoglu", "12345");
-		} catch (CredentialsException e) {
+		List<String> args = getParameters().getRaw();
+		if(args.isEmpty() || !args.contains("USER:")) { // no args or no user given, show login dialog
+			Optional<User> optional = new LoginDialog(cloud).showAndWait();
+			if (!optional.isPresent()) return;
+			user = optional.get();
 		}
-
 		helper = new MMMHelper(user);
 		model = new MMMDataModel(helper);
 		model.addListener(this);
@@ -106,6 +113,7 @@ public class LinkApplication extends Application implements ModelListener {
 		defineLinkDialog = new DefineLinkDialog(model);
 		matrixView = new MatrixView(model);
 		graphView = new GraphView(model);
+
 		
 		root = new BorderPane();
 		bars = new VBox();
@@ -136,6 +144,7 @@ public class LinkApplication extends Application implements ModelListener {
 		saveBar.getItems().add(saveButton);
 
 		// TODO to REMOVE - initial load!!!!
+		// TODO: Interaction with design space
 		List<Package> collect = helper.getWorkspace().getPackages().stream()
 				.filter(p -> "CodePackage".equals(((String) p.getPropertyValue(DataStorage.PROPERTY_NAME))))
 				.collect(Collectors.toList());
@@ -208,6 +217,9 @@ public class LinkApplication extends Application implements ModelListener {
 		matrixView.update(sourceData, targetData, selectedLink);
 	}
 
+	/**
+	 * Updating of control bar.
+	 */
 	private void refreshSelections() {
 		ObservableList<Artifact> checkedSourceItems = sourceCheckComboBox.getCheckModel().getCheckedItems();
 		ObservableList<Artifact> checkedTargettems = targetCheckComboBox.getCheckModel().getCheckedItems();
@@ -238,7 +250,6 @@ public class LinkApplication extends Application implements ModelListener {
 		}else{
 			linkComboBox.getSelectionModel().select(0);
 		}
-
 		root.requestFocus();
 	}
 
@@ -270,6 +281,7 @@ public class LinkApplication extends Application implements ModelListener {
 
 		MenuItem loadDataMenuItem = new MenuItem("Load Data");
 		loadDataMenuItem.setDisable(false);
+		// TODO: Interaction with design space
 		loadDataMenuItem.setOnAction(actionEvent -> {
 			Optional<List<? extends Artifact>> optional = ListDialog
 					.DataPackageListDialog(helper.getWorkspace().getPackages(), model.getDataPackages()).showAndWait();
@@ -277,6 +289,7 @@ public class LinkApplication extends Application implements ModelListener {
 		});
 
 		MenuItem configureDataMenuItem = new MenuItem("Load Link Package");
+		// TODO: Interaction with design space
 		configureDataMenuItem.setOnAction(actionEvent -> {
 			List<Package> linkPackages = helper.getWorkspace().getPackages().stream()
 					.filter(p -> Boolean.TRUE.equals(p.getPropertyValueOrNull(Constants.PACKAGE_LINK_PROPERTY)))
@@ -336,6 +349,11 @@ public class LinkApplication extends Application implements ModelListener {
 		return menuBar;
 	}
 
+/**
+ * 
+ * @return A special Toolbar to select sources/targets and/or links of given view.
+ * 
+ */
 	private ToolBar createToolBar() {
 		GridPane linkPane = new GridPane();
 		GridPane applySelectionPane = new GridPane();
@@ -401,7 +419,15 @@ public class LinkApplication extends Application implements ModelListener {
 		});
 		return t;
 	}
-
+/**
+ * 
+ * @return A special Toolbar for handling different graph operations:<p>
+ * 
+ *  - Moving of elements <br>
+ *  - Creation of Link between elements<br>
+ *  - Deletion of Link between elements<p>
+ *  Only visible, if graphView is visible.
+ */
 	private ToolBar createGrahpHandlingBar() {
 		ToolBar t = new ToolBar();
 
@@ -439,7 +465,9 @@ public class LinkApplication extends Application implements ModelListener {
 		return t;
 	}
 
-	
+	/**
+	 * Updated selected view.
+	 */
 	private void refreshView() {
 		if (matrixItem.isSelected()) {
 			refreshMatrix();

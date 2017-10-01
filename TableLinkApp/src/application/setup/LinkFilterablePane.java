@@ -106,6 +106,7 @@ public class LinkFilterablePane extends GridPane {
 						super.updateItem(item, empty);
 						if (item != null) {
 							StringBuilder sb = new StringBuilder();
+							// TODO: Interaction with design space
 							setText((String) item.getPropertyValueOrNull(MMMTypeProperties.NAME));
 
 							for (Property p : item.getAliveProperties()) {
@@ -142,11 +143,6 @@ public class LinkFilterablePane extends GridPane {
 				super.updateItem(item, empty);
 				if (item != null) {
 					setText(item.getName());
-
-					// Tooltip tp = new Tooltip(sb.toString());
-					// tp.setMaxWidth(400);
-					// tp.setWrapText(true);
-					// setTooltip(tp);
 				}
 				if (empty || item == null) {
 					setGraphic(null);

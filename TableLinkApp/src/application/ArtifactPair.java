@@ -13,6 +13,7 @@ public class ArtifactPair {
 	public ArtifactPair(Artifact complexType, Artifact instance){
 		this.complexType = complexType;
 		this.instance = instance;
+		// TODO: Interaction with design space
 		complexTypeNameProperty = new SimpleStringProperty((String)complexType.getPropertyValue(MMMTypeProperties.NAME));
 		instanceNameProperty = new SimpleStringProperty((String)instance.getPropertyValue(MMMTypeProperties.NAME));
 	}

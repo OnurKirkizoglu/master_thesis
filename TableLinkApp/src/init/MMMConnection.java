@@ -4,6 +4,7 @@ import at.jku.sea.cloud.DataStorage;
 import at.jku.sea.cloud.User;
 import at.jku.sea.cloud.Workspace;
 
+//TODO: Whole class interact with design space.
 /**
  *
  */

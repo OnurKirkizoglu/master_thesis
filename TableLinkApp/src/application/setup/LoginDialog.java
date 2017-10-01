@@ -61,6 +61,7 @@ public class LoginDialog extends Dialog<User> {
         // do not close the dialog in case incorrect input is given!
         button.addEventFilter(ActionEvent.ACTION, (event) -> {
             try {
+				// TODO: Interaction with design space
                 user = cloud.getUserByCredentials(username.getText(), password.getText());
             } catch (CredentialsException e) {
                 event.consume();

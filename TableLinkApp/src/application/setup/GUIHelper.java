@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.controlsfx.control.CheckComboBox;
-
+// TODO Whole class interacts with design space.
 /**
  * Provides some basic GUI controls and callbacks, used throughout the project
  */
@@ -67,12 +67,12 @@ public class GUIHelper {
 	/**
 	 * A callback for {@link ListView#cellFactoryProperty} which handles the
 	 * correct naming of {@link Artifact}s in {@link ListView}s and showing a
-	 * tooltip, containing all alive properties of the hovered {@link Artifact}.
+	 * Tooltip, containing all alive properties of the hovered {@link Artifact}.
 	 * <br>
 	 * <br>
 	 * <b>Important note!</b> <br>
 	 * This callback is intended to be used for link artifacts only, as it
-	 * creates a tooltip for certain properties which represent a link</b>
+	 * creates a Tooltip for certain properties which represent a link</b>
 	 */
 	public static final Callback<ListView<Artifact>, ListCell<Artifact>> listLinkCallBack = new Callback<ListView<Artifact>, ListCell<Artifact>>() {
 		@Override
