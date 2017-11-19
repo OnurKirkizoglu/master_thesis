@@ -478,15 +478,18 @@ public class LinkApplication extends Application implements ModelListener {
 	}
 
 	private void setView(Pane view) {
-		view.setMinSize(4000, 4000);
-		view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-
-		ScrollPane sp = new ScrollPane(view);
-		sp.setPrefSize(300, 300);
-		sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-		sp.setFitToWidth(true);
-		sp.setFitToHeight(true);
-		root.requestFocus();
-		root.setCenter(sp);
+		if(matrixItem.isSelected()){
+			root.setCenter(view);
+		}else{
+			view.setMinSize(4000, 4000);
+			view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+			ScrollPane sp = new ScrollPane(view);
+			sp.setPrefSize(300, 300);
+			sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+			sp.setFitToWidth(true);
+			sp.setFitToHeight(true);
+			root.requestFocus();
+			root.setCenter(sp);			
+		}
 	}
 }
